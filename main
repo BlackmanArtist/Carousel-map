@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Keep Working</title>
+    <style type="text/css">
+        *{
+            margin:0;
+            padding: 0;
+            list-style: none;
+            border: 0;
+        }
+        #body{
+            background-color: lightpink;
+        }
+
+        #all{
+            position: absolute;
+            height: 200px;
+            width: 500px;
+            top: 100px;
+            left: -250px;
+            margin-left: 50%;
+            border: 1px solid #000;
+        }
+        #all2{
+            position: absolute;
+            height: 200px;
+            width: 500px;
+            top: 300px;
+            left: -250px;
+            margin-left: 50%;
+            border: 1px solid #000;
+        }
+        #screen{
+            position: relative;
+            height: 200px;
+            width: 500px;
+            background-color: aliceblue;
+            overflow: hidden;
+        }
+        #screen2{
+            position: relative;
+            height: 200px;
+            width: 500px;
+            background-color: aquamarine;
+            overflow: hidden;
+        }
+        #screen ul{
+
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            height: 200px;
+            width: 3000px;
+        }
+        #screen2 ul{
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            height: 200px;
+            width: 2500px;
+        }
+        #screen ul li{
+            height: 200px;
+            width: 500px;
+            overflow: hidden;
+            float: left;
+        }
+        #screen2 ul li{
+            height: 200px;
+            width: 500px;
+            overflow: hidden;
+            float: left;
+        }
+        #screen ol{
+            position: absolute;
+            height: 20px;
+            width: 110px;
+            bottom: 10px;
+            left: -55px;
+            margin-left: 50%;
+            background-color: antiquewhite;
+        }
+        #screen2 ol{
+            position: absolute;
+            height: 20px;
+            width: 100px;
+            bottom: 10px;
+            left: -50px;
+            margin-left: 50%;
+        }
+        #screen ol li{
+            float: left;
+            height: 20px;
+            width: 20px;
+            text-align: center;
+            border: solid 1px #000000;
+            cursor: pointer;
+        }
+        #screen2 ol li{
+            float: left;
+            height: 15px;
+            width: 15px;
+            background-color: white;
+            margin-left: 6px;
+            border: solid 1px #000000;
+            cursor: pointer;
+        }
+        #screen ol li.current{
+            background-color: red;
+        }
+        #screen2 ol li.current{
+            background-color: lightpink;
+        }
+        #arr{
+            display: none;
+        }
+        #arr2{
+            display: none;
+        }
+        #arr span{
+
+            position: absolute;
+            height: 40px;
+            width: 40px;
+            top: -20px;
+            left: 5px;
+            margin-top: 100px;
+            text-align: center;
+            border: solid 1px #000;
+            opacity: 0.5;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 25px;
+            color: lightgray;
+            line-height: 40px;
+        }
+        #arr2 span{
+            position: absolute;
+            height: 40px;
+            width: 40px;
+            top: -20px;
+            left: 5px;
+            margin-top: 100px;
+            text-align: center;
+            border: solid 1px #000;
+            opacity: 0.5;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 25px;
+            color: lightgray;
+            line-height: 40px;
+        }
+        #arr #right{
+            right: 5px;
+            left: auto;
+        }
+        #arr2 #right2{
+            right: 5px;
+            left: auto;
+        }
+        .word{
+            position: absolute;
+            height: 60px;
+            width: 500px;
+            bottom: 0px;
+            overflow: hidden;
+        }
+    </style>
+
+    <script>
+        window.onload = function () {
+            //1.获取事件源和相关元素
+            var screen = document.getElementById("screen");
+            var ul = screen.children[0];
+            var ol = screen.children[1];
+            var div = screen.children[2];
+            var imgWidth = screen.offsetWidth;
+
+            //2.将ul的第一个子元素放置到最后
+            var tempLi = ul.children[0].cloneNode(true);
+            ul.appendChild(tempLi);
+            //3.为ol添加子元素，数量为ul子元素的数量-1
+            for(let i = 0; i < ul.children.length - 1;i++){
+                var newOlLi = document.createElement("li");
+                newOlLi.innerHTML = i + 1;
+                ol.appendChild(newOlLi);
+            }
+            var olLiArr = ol.children;
+            olLiArr[0].className = "current";
+            //4.鼠标放到ol的li上切换图片
+            for(let i = 0,len = olLiArr.length;i < len;i++){
+                olLiArr[i].index = i;
+                olLiArr[i].onmouseover = function (ev) {
+                    for(let j = 0;j < len;j++){
+                        olLiArr[j].className = "";
+                    }
+                    this.className = "current";
+                    key = square = this.index;
+                    animate(ul,-this.index * imgWidth);
+                }
+            }
+            //5.设置定时器
+            var key = 0;
+            var square = 0;
+            var timer = setInterval(autoPlay,2000);
+            screen.onmouseover = function (ev) {
+                clearInterval(timer);
+                div.style.display = "block";
+            }
+            screen.onmouseout = function (ev) {
+                timer = setInterval(autoPlay,2000);
+                div.style.display = "none";
+            }
+            //6.设置左右箭头可以切换图片
+            var divArr = div.children;
+            divArr[0].onclick = function (ev) {
+                key--;
+                if(key < 0){
+                    ul.style.left = -(ul.children.length-1) * imgWidth + "px";
+                    key = 4;
+                }
+                animate(ul,-key * imgWidth);
+                square--;
+                if(square < 0){
+                    square = 4;
+                }
+                for(let k = 0;k < len;k++){
+                    olLiArr[k].className = "";
+                }
+                olLiArr[square].className = "current";
+            }
+            divArr[1].onclick = autoPlay;
+            //自动播放函数
+            function autoPlay() {
+                key++;
+                if(key > ul.children.length - 1){
+                    ul.style.left = 0;
+                    key = 1;
+                }
+                animate(ul,-key * imgWidth);
+
+                square++;
+                if(square > 4){
+                    square = 0;
+                }
+                for(let k = 0; k < 5;k++){
+                    olLiArr[k].className = "";
+                }
+                olLiArr[square].className = "current";
+
+            }
+            //图片移动函数
+            function animate(ele,target){
+                clearInterval(ele.timer);
+                var speed = target>ele.offsetLeft?10:-10;
+                ele.timer = setInterval(function () {
+                    var val = target - ele.offsetLeft;
+                    ele.style.left = ele.offsetLeft + speed + "px";
+                    if(Math.abs(val) < Math.abs(speed)){
+                        ele.style.left = target + "px";
+                        clearInterval(ele.timer);
+                    }
+                },10)
+            }
+
+            //针对第二个轮播图的操作
+            //1
+            var screen2 = document.getElementById("screen2");
+            var ul2 = screen2.children[0];
+            var ol2 = screen2.children[1];
+            var div2 = screen2.children[2];
+            //2
+            var tempLi2 = ul2.children[0].cloneNode(true);
+            ul2.appendChild(tempLi2);
+            //3
+            for(let i = 0; i < 4;i++){
+                let newOlLi2 = document.createElement("li");
+                ol2.appendChild(newOlLi2);
+            }
+            var olLiArr2 = ol2.children;
+            olLiArr2[0].className = "current";
+            //4
+            for(let i = 0,len = olLiArr2.length;i < len;i++){
+                olLiArr2[i].index = i;
+                olLiArr2[i].onmouseover = function (ev) {
+                    for(let j = 0;j < len;j++){
+                        olLiArr2[j].className = "";
+                    }
+                    this.className = "current";
+                    key2 = square2 = this.index;
+                    animate(ul,-this.index * imgWidth);
+                }
+            }
+            //5
+            var key2 = 0;
+            var square2 = 0;
+            var timer2 = setInterval(autoPlay2,3000);
+            screen2.onmouseover = function (ev) {
+                clearInterval(timer2);
+                div2.style.display = "block";
+            }
+            screen2.onmouseout = function (ev) {
+                div2.style.display = "none";
+                timer2 = setInterval(autoPlay2,3000);
+            }
+            //6
+            var divArr2 = div2.children;
+            divArr2[0].onclick = function (ev) {
+                key2--;
+                if(key2 < 0){
+                    ul.style.left = -(ul2.children.length-1) * imgWidth + "px";
+                    key2 = 4;
+                }
+                animate(ul2,-key2 * imgWidth);
+                square2--;
+                if(square2 < 0){
+                    square2 = 4;
+                }
+                for(let k = 0;k < 4;k++){
+                    olLiArr2[k].className = "";
+                }
+                olLiArr2[square2].className = "current";
+            }
+            divArr2[1].onclick = autoPlay2;
+            //轮播图2的自动播放函数
+            function autoPlay2() {
+                key2++;
+                if(key2 > ul2.children.length - 1){
+                    ul2.style.left = 0;
+                    key2 = 1;
+                }
+                animate(ul2,-key2 * imgWidth);
+
+                square2++;
+                if(square2 > 3){
+                    square2 = 0;
+                }
+                for(let k = 0; k < 4;k++){
+                    olLiArr2[k].className = "";
+                }
+                olLiArr2[square2].className = "current";
+
+            }
+
+
+        }
+    </script>
+</head>
+
+    <body id="body">
+        <div>
+            <div id="all">
+                <div id="screen">
+                    <ul>
+                        <li><img src="图片库/1.jpg" width="500" height="200"></li>
+                        <li><img src="图片库/2.jpg" width="500" height="200"></li>
+                        <li><img src="图片库/3.jpg" width="500" height="200"></li>
+                        <li><img src="图片库/4.jpg" width="500" height="200"></li>
+                        <li><img src="图片库/5.jpg" width="500" height="200"></li>
+                    </ul>
+                    <ol>
+
+                    </ol>
+                    <div id="arr">
+                        <span id="left"><<</span>
+                        <span id="right">>></span>
+                    </div>
+                </div>
+            </div>
+            <div id="all2">
+                <div id="screen2">
+                    <ul>
+                        <li>
+                            <img src="图片库/b1.jpg" width="500" height="200">
+                            <div class="word">
+                                <p style="font-family: 黑体;font-size: 20px;">故人西辞黄鹤楼</p>
+                            </div>
+                        </li>
+                        <li>
+                            <img src="图片库/b2.jpg" width="500" height="200">
+                            <div class="word">
+                                <p style="font-family: 黑体;font-size: 20px;">烟花三月下扬州</p>
+                            </div>
+                        </li>
+                        <li>
+                            <img src="图片库/b3.jpg" width="500" height="200">
+                            <div class="word">
+                                <p style="font-family: 黑体;font-size: 20px;">孤帆远影碧空尽</p>
+                            </div>
+                        </li>
+                        <li>
+                            <img src="图片库/b4.jpg" width="500" height="200">
+                            <div class="word">
+                                <p style="font-family: 黑体;font-size: 20px;">唯见长江天际流</p>
+                            </div>
+                        </li>
+                    </ul>
+                    <ol>
+
+                    </ol>
+                    <div id="arr2">
+                        <span id="left2"><<</span>
+                        <span id="right2">>></span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
